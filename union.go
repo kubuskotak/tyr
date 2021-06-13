@@ -26,7 +26,7 @@ func UnionAll(builder ...Builder) interface {
 	}
 }
 
-func (u *union) ToSql(d Dialect, buf Buffer) error {
+func (u *union) ToSQL(d Dialect, buf Buffer) error {
 	return u.Build(d, buf)
 }
 

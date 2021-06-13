@@ -18,7 +18,7 @@ type UpdateStmt struct {
 
 type UpdateBuilder = UpdateStmt
 
-func (b *UpdateStmt) ToSql(d Dialect, buf Buffer) error {
+func (b *UpdateStmt) ToSQL(d Dialect, buf Buffer) error {
 	i := interpolator{
 		Buffer:       buf,
 		Dialect:      d,

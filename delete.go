@@ -19,7 +19,7 @@ type DeleteStmt struct {
 
 type DeleteBuilder = DeleteStmt
 
-func (b *DeleteStmt) ToSql(d Dialect, buf Buffer) error {
+func (b *DeleteStmt) ToSQL(d Dialect, buf Buffer) error {
 	i := interpolator{
 		Buffer:       buf,
 		Dialect:      d,

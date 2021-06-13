@@ -11,7 +11,7 @@ func Expr(query string, value ...interface{}) Builder {
 	return &raw{Query: query, Value: value}
 }
 
-func (raw *raw) ToSql(_ Dialect, buf Buffer) error {
+func (raw *raw) ToSQL(_ Dialect, buf Buffer) error {
 	buf.WriteString(raw.Query)
 	buf.WriteValue(raw.Value...)
 	return nil

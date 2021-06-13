@@ -24,7 +24,7 @@ type InsertStmt struct {
 
 type InsertBuilder = InsertStmt
 
-func (b *InsertStmt) ToSql(d Dialect, buf Buffer) error {
+func (b *InsertStmt) ToSQL(d Dialect, buf Buffer) error {
 	i := interpolator{
 		Buffer:       buf,
 		Dialect:      d,

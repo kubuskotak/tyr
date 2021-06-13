@@ -30,7 +30,7 @@ type SelectStmt struct {
 	comments Comments
 }
 
-func (b *SelectStmt) ToSql(d Dialect, buf Buffer) error {
+func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
 	i := interpolator{
 		Buffer:       buf,
 		Dialect:      d,
