@@ -142,3 +142,9 @@ var (
 	dummyDest   sql.Scanner = dummyScanner{}
 	typeScanner             = reflect.TypeOf((*sql.Scanner)(nil)).Elem()
 )
+
+func GetTagColumns(structValue interface{}) []string {
+	t := reflect.Indirect(reflect.ValueOf(structValue))
+	m := newTagStore()
+	return m.get(t.Type())
+}
