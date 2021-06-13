@@ -95,7 +95,7 @@ func TestCondition(t *testing.T) {
 		},
 	} {
 		buf := NewBuffer()
-		err := test.cond.ToSQL(dialect.MySQL, buf)
+		err := test.cond.Build(dialect.MySQL, buf)
 		require.NoError(t, err)
 		require.Equal(t, test.query, buf.String())
 		require.Equal(t, test.value, buf.Value())

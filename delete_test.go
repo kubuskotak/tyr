@@ -10,7 +10,7 @@ import (
 func TestDeleteStmt(t *testing.T) {
 	buf := NewBuffer()
 	builder := DeleteFrom("table").Where(Eq("a", 1)).Comment("DELETE TEST")
-	err := builder.ToSQL(dialect.MySQL, buf)
+	err := builder.Build(dialect.MySQL, buf)
 	require.NoError(t, err)
 	require.Equal(t, "/* DELETE TEST */\nDELETE FROM `table` WHERE (`a` = ?)", buf.String())
 	require.Equal(t, []interface{}{1}, buf.Value())
@@ -19,6 +19,6 @@ func TestDeleteStmt(t *testing.T) {
 func BenchmarkDeleteSQL(b *testing.B) {
 	buf := NewBuffer()
 	for i := 0; i < b.N; i++ {
-		DeleteFrom("table").Where(Eq("a", 1)).ToSQL(dialect.MySQL, buf)
+		DeleteFrom("table").Where(Eq("a", 1)).Build(dialect.MySQL, buf)
 	}
 }

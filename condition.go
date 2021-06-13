@@ -10,7 +10,7 @@ func buildCond(d Dialect, buf Buffer, pred string, cond ...Builder) error {
 			buf.WriteString(" ")
 		}
 		buf.WriteString("(")
-		err := c.ToSQL(d, buf)
+		err := c.Build(d, buf)
 		if err != nil {
 			return err
 		}

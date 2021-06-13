@@ -22,7 +22,7 @@ func (c Comments) Append(comment string) Comments {
 }
 
 // Build writes each comment in the form of "/* some comment */\n"
-func (c Comments) ToSQL(d Dialect, buf Buffer) error {
+func (c Comments) Build(d Dialect, buf Buffer) error {
 	for _, comment := range c {
 		words := []string{openingSQLComment, space, comment, space, closingSQLComment, newline}
 		for _, str := range words {

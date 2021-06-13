@@ -4,7 +4,7 @@ package tyr
 type I string
 
 // ToSQL quotes string with dialect.
-func (i I) ToSQL(d Dialect, buf Buffer) error {
+func (i I) Build(d Dialect, buf Buffer) error {
 	buf.WriteString(d.QuoteIdent(string(i)))
 	return nil
 }

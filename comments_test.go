@@ -43,7 +43,7 @@ func TestComments(t *testing.T) {
 			}
 			t.Run(fmt.Sprintf("%s/%s", name, test.name), func(t *testing.T) {
 				buf := NewBuffer()
-				err := test.comments.ToSQL(query.Dialect, buf)
+				err := test.comments.Build(query.Dialect, buf)
 				require.NoError(t, err)
 				require.Equal(t, test.expect, buf.String())
 
@@ -51,7 +51,7 @@ func TestComments(t *testing.T) {
 				stmt.comments = test.comments
 
 				buf2 := NewBuffer()
-				err = stmt.ToSQL(query.Dialect, buf2)
+				err = stmt.Build(query.Dialect, buf2)
 				require.NoError(t, err)
 				require.Equal(t, test.expect+"SELECT 1", buf2.String())
 			})

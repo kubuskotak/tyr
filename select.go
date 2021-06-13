@@ -30,16 +30,30 @@ type SelectStmt struct {
 	comments Comments
 }
 
-func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
+func (b *SelectStmt) ToSql(d Dialect, buf Buffer) error {
+	i := interpolator{
+		Buffer:       NewBuffer(),
+		Dialect:      d,
+		IgnoreBinary: true,
+	}
+	err := i.encodePlaceholder(b, true)
+	if err != nil {
+		return err
+	}
+	buf = i.Buffer
+	return nil
+}
+
+func (b *SelectStmt) Build(d Dialect, buf Buffer) error {
 	if b.raw.Query != "" {
-		return b.raw.ToSQL(d, buf)
+		return b.raw.Build(d, buf)
 	}
 
 	if len(b.Column) == 0 {
 		return ErrColumnNotSpecified
 	}
 
-	err := b.comments.ToSQL(d, buf)
+	err := b.comments.Build(d, buf)
 	if err != nil {
 		return err
 	}
@@ -76,7 +90,7 @@ func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
 		}
 		if len(b.JoinTable) > 0 {
 			for _, join := range b.JoinTable {
-				err := join.ToSQL(d, buf)
+				err := join.Build(d, buf)
 				if err != nil {
 					return err
 				}
@@ -86,7 +100,7 @@ func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
 
 	if len(b.WhereCond) > 0 {
 		buf.WriteString(" WHERE ")
-		err := And(b.WhereCond...).ToSQL(d, buf)
+		err := And(b.WhereCond...).Build(d, buf)
 		if err != nil {
 			return err
 		}
@@ -98,7 +112,7 @@ func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			err := group.ToSQL(d, buf)
+			err := group.Build(d, buf)
 			if err != nil {
 				return err
 			}
@@ -107,7 +121,7 @@ func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
 
 	if len(b.HavingCond) > 0 {
 		buf.WriteString(" HAVING ")
-		err := And(b.HavingCond...).ToSQL(d, buf)
+		err := And(b.HavingCond...).Build(d, buf)
 		if err != nil {
 			return err
 		}
@@ -119,7 +133,7 @@ func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
 			if i > 0 {
 				buf.WriteString(", ")
 			}
-			err := order.ToSQL(d, buf)
+			err := order.Build(d, buf)
 			if err != nil {
 				return err
 			}
@@ -143,7 +157,7 @@ func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
 	if len(b.Suffixes) > 0 {
 		for _, suffix := range b.Suffixes {
 			buf.WriteString(" ")
-			err := suffix.ToSQL(d, buf)
+			err := suffix.Build(d, buf)
 			if err != nil {
 				return err
 			}

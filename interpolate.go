@@ -97,7 +97,7 @@ var (
 func (i *interpolator) encodePlaceholder(value interface{}, topLevel bool) error {
 	if builder, ok := value.(Builder); ok {
 		pbuf := NewBuffer()
-		err := builder.ToSQL(i.Dialect, pbuf)
+		err := builder.Build(i.Dialect, pbuf)
 		if err != nil {
 			return err
 		}

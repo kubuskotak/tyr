@@ -10,13 +10,18 @@ package tyr
 // To do that, the value that you wish to be expanded with ? needs to
 // implement Builder.
 type Builder interface {
-	ToSQL(Dialect, Buffer) error
+	Build(Dialect, Buffer) error
+	ToSql(Dialect, Buffer) error
 }
 
 // BuildFunc implements Builder.
 type BuildFunc func(Dialect, Buffer) error
 
-// ToSQL calls itself to build SQL.
-func (b BuildFunc) ToSQL(d Dialect, buf Buffer) error {
+// ToSql calls itself to build SQL.
+func (b BuildFunc) ToSql(d Dialect, buf Buffer) error {
+	return b(d, buf)
+}
+
+func (b BuildFunc) Build(d Dialect, buf Buffer) error {
 	return b(d, buf)
 }

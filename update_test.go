@@ -10,7 +10,7 @@ import (
 func TestUpdateStmt(t *testing.T) {
 	buf := NewBuffer()
 	builder := Update("table").Set("a", 1).Where(Eq("b", 2)).Comment("UPDATE TEST")
-	err := builder.ToSQL(dialect.MySQL, buf)
+	err := builder.Build(dialect.MySQL, buf)
 	require.NoError(t, err)
 
 	require.Equal(t, "/* UPDATE TEST */\nUPDATE `table` SET `a` = ? WHERE (`b` = ?)", buf.String())
@@ -20,25 +20,25 @@ func TestUpdateStmt(t *testing.T) {
 func BenchmarkUpdateValuesSQL(b *testing.B) {
 	buf := NewBuffer()
 	for i := 0; i < b.N; i++ {
-		Update("table").Set("a", 1).ToSQL(dialect.MySQL, buf)
+		Update("table").Set("a", 1).Build(dialect.MySQL, buf)
 	}
 }
 
 func BenchmarkUpdateMapSQL(b *testing.B) {
 	buf := NewBuffer()
 	for i := 0; i < b.N; i++ {
-		Update("table").SetMap(map[string]interface{}{"a": 1, "b": 2}).ToSQL(dialect.MySQL, buf)
+		Update("table").SetMap(map[string]interface{}{"a": 1, "b": 2}).Build(dialect.MySQL, buf)
 	}
 }
 
 func TestUpdateIncrBy(t *testing.T) {
 	buf := NewBuffer()
 	builder := Update("table").IncrBy("a", 1).Where(Eq("b", 2))
-	err := builder.ToSQL(dialect.MySQL, buf)
+	err := builder.Build(dialect.MySQL, buf)
 	require.NoError(t, err)
 
 	sqlstr, err := InterpolateForDialect(buf.String(), buf.Value(), dialect.MySQL)
 	require.NoError(t, err)
 
-	require.Equal(t, "UPDATE `table` SET `a` = `a` + 1 WHERE (`b` = 2)", sqlstr)
+	require.Equal(t, "UPDATE `table` SET `a` = 'a' + 1 WHERE (`b` = 2)", sqlstr)
 }

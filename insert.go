@@ -24,9 +24,23 @@ type InsertStmt struct {
 
 type InsertBuilder = InsertStmt
 
-func (b *InsertStmt) ToSQL(d Dialect, buf Buffer) error {
+func (b *InsertStmt) ToSql(d Dialect, buf Buffer) error {
+	i := interpolator{
+		Buffer:       NewBuffer(),
+		Dialect:      d,
+		IgnoreBinary: true,
+	}
+	err := i.encodePlaceholder(b, true)
+	if err != nil {
+		return err
+	}
+	buf = i.Buffer
+	return nil
+}
+
+func (b *InsertStmt) Build(d Dialect, buf Buffer) error {
 	if b.raw.Query != "" {
-		return b.raw.ToSQL(d, buf)
+		return b.raw.Build(d, buf)
 	}
 
 	if b.Table == "" {
@@ -37,7 +51,7 @@ func (b *InsertStmt) ToSQL(d Dialect, buf Buffer) error {
 		return ErrColumnNotSpecified
 	}
 
-	err := b.comments.ToSQL(d, buf)
+	err := b.comments.Build(d, buf)
 	if err != nil {
 		return err
 	}

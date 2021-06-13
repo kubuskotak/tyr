@@ -26,7 +26,11 @@ func UnionAll(builder ...Builder) interface {
 	}
 }
 
-func (u *union) ToSQL(d Dialect, buf Buffer) error {
+func (u *union) ToSql(d Dialect, buf Buffer) error {
+	return u.Build(d, buf)
+}
+
+func (u *union) Build(d Dialect, buf Buffer) error {
 	for i, b := range u.builder {
 		if i > 0 {
 			buf.WriteString(" UNION ")
@@ -34,7 +38,7 @@ func (u *union) ToSQL(d Dialect, buf Buffer) error {
 				buf.WriteString("ALL ")
 			}
 		}
-		err := b.ToSQL(d, buf)
+		err := b.Build(d, buf)
 		if err != nil {
 			return err
 		}

@@ -19,16 +19,30 @@ type DeleteStmt struct {
 
 type DeleteBuilder = DeleteStmt
 
-func (b *DeleteStmt) ToSQL(d Dialect, buf Buffer) error {
+func (b *DeleteStmt) ToSql(d Dialect, buf Buffer) error {
+	i := interpolator{
+		Buffer:       NewBuffer(),
+		Dialect:      d,
+		IgnoreBinary: true,
+	}
+	err := i.encodePlaceholder(b, true)
+	if err != nil {
+		return err
+	}
+	buf = i.Buffer
+	return nil
+}
+
+func (b *DeleteStmt) Build(d Dialect, buf Buffer) error {
 	if b.raw.Query != "" {
-		return b.raw.ToSQL(d, buf)
+		return b.raw.Build(d, buf)
 	}
 
 	if b.Table == "" {
 		return ErrTableNotSpecified
 	}
 
-	err := b.comments.ToSQL(d, buf)
+	err := b.comments.Build(d, buf)
 	if err != nil {
 		return err
 	}
@@ -38,7 +52,7 @@ func (b *DeleteStmt) ToSQL(d Dialect, buf Buffer) error {
 
 	if len(b.WhereCond) > 0 {
 		buf.WriteString(" WHERE ")
-		err := And(b.WhereCond...).ToSQL(d, buf)
+		err := And(b.WhereCond...).Build(d, buf)
 		if err != nil {
 			return err
 		}
