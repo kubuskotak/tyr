@@ -21,7 +21,7 @@ type DeleteBuilder = DeleteStmt
 
 func (b *DeleteStmt) ToSql(d Dialect, buf Buffer) error {
 	i := interpolator{
-		Buffer:       NewBuffer(),
+		Buffer:       buf,
 		Dialect:      d,
 		IgnoreBinary: true,
 	}
@@ -29,7 +29,6 @@ func (b *DeleteStmt) ToSql(d Dialect, buf Buffer) error {
 	if err != nil {
 		return err
 	}
-	buf = i.Buffer
 	return nil
 }
 

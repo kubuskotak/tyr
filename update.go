@@ -20,7 +20,7 @@ type UpdateBuilder = UpdateStmt
 
 func (b *UpdateStmt) ToSql(d Dialect, buf Buffer) error {
 	i := interpolator{
-		Buffer:       NewBuffer(),
+		Buffer:       buf,
 		Dialect:      d,
 		IgnoreBinary: true,
 	}
@@ -28,7 +28,6 @@ func (b *UpdateStmt) ToSql(d Dialect, buf Buffer) error {
 	if err != nil {
 		return err
 	}
-	buf = i.Buffer
 	return nil
 }
 
