@@ -26,7 +26,7 @@ type InsertBuilder = InsertStmt
 
 func (b *InsertStmt) ToSQL(d Dialect, buf Buffer) error {
 	i := interpolator{
-		Buffer:       buf,
+		Buffer:       NewBuffer(),
 		Dialect:      d,
 		IgnoreBinary: true,
 	}
@@ -34,7 +34,8 @@ func (b *InsertStmt) ToSQL(d Dialect, buf Buffer) error {
 	if err != nil {
 		return err
 	}
-	return nil
+
+	return buf.WriteValue(i.Value())
 }
 
 func (b *InsertStmt) Build(d Dialect, buf Buffer) error {

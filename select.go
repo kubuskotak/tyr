@@ -32,7 +32,7 @@ type SelectStmt struct {
 
 func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
 	i := interpolator{
-		Buffer:       buf,
+		Buffer:       NewBuffer(),
 		Dialect:      d,
 		IgnoreBinary: true,
 	}
@@ -40,7 +40,8 @@ func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
 	if err != nil {
 		return err
 	}
-	return nil
+
+	return buf.WriteValue(i.Value())
 }
 
 func (b *SelectStmt) Build(d Dialect, buf Buffer) error {
