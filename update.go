@@ -18,18 +18,10 @@ type UpdateStmt struct {
 
 type UpdateBuilder = UpdateStmt
 
-func (b *UpdateStmt) ToSQL(d Dialect, buf Buffer) error {
-	i := interpolator{
-		Buffer:       NewBuffer(),
-		Dialect:      d,
-		IgnoreBinary: true,
-	}
-	err := i.encodePlaceholder(b, true)
-	if err != nil {
-		return err
-	}
-
-	return buf.WriteValue(i.Value())
+func (b *UpdateStmt) ToSQL(d Dialect, i Buffer) error {
+	builder := NewBuffer()
+	_ = b.Build(d, builder)
+	return interpolateSql(d, i, builder.String(), builder.Value())
 }
 
 func (b *UpdateStmt) Build(d Dialect, buf Buffer) error {

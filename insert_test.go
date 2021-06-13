@@ -18,6 +18,9 @@ func TestInsertStmt(t *testing.T) {
 		A: 2,
 		C: "two",
 	}).Comment("INSERT TEST")
+	pgsql := NewBuffer()
+	er := builder.ToSQL(dialect.PostgreSQL, pgsql)
+	require.NoError(t, er)
 	err := builder.Build(dialect.MySQL, buf)
 	require.NoError(t, err)
 	require.Equal(t, "/* INSERT TEST */\nINSERT IGNORE INTO `table` (`a`,`b`) VALUES (?,?), (?,?)", buf.String())

@@ -24,18 +24,10 @@ type InsertStmt struct {
 
 type InsertBuilder = InsertStmt
 
-func (b *InsertStmt) ToSQL(d Dialect, buf Buffer) error {
-	i := interpolator{
-		Buffer:       NewBuffer(),
-		Dialect:      d,
-		IgnoreBinary: true,
-	}
-	err := i.encodePlaceholder(b, true)
-	if err != nil {
-		return err
-	}
-
-	return buf.WriteValue(i.Value())
+func (b *InsertStmt) ToSQL(d Dialect, i Buffer) error {
+	builder := NewBuffer()
+	_ = b.Build(d, builder)
+	return interpolateSql(d, i, builder.String(), builder.Value())
 }
 
 func (b *InsertStmt) Build(d Dialect, buf Buffer) error {

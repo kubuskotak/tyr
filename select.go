@@ -30,18 +30,10 @@ type SelectStmt struct {
 	comments Comments
 }
 
-func (b *SelectStmt) ToSQL(d Dialect, buf Buffer) error {
-	i := interpolator{
-		Buffer:       NewBuffer(),
-		Dialect:      d,
-		IgnoreBinary: true,
-	}
-	err := i.encodePlaceholder(b, true)
-	if err != nil {
-		return err
-	}
-
-	return buf.WriteValue(i.Value())
+func (b *SelectStmt) ToSQL(d Dialect, i Buffer) error {
+	builder := NewBuffer()
+	_ = b.Build(d, builder)
+	return interpolateSql(d, i, builder.String(), builder.Value())
 }
 
 func (b *SelectStmt) Build(d Dialect, buf Buffer) error {

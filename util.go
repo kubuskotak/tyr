@@ -147,3 +147,31 @@ func prepareSelect(a []string) []interface{} {
 	}
 	return b
 }
+
+func interpolateSql(d Dialect, i Buffer, query string, value []interface{}) error {
+	valueIndex := 0
+	N := 0
+
+	for {
+		index := strings.Index(query, placeholder)
+		if index == -1 {
+			break
+		}
+
+		// escape placeholder by repeating it twice
+		if strings.HasPrefix(query[index:], escapedPlaceholder) {
+			i.WriteString(query[:index+1]) // Write placeholder once, not twice
+			query = query[index+len(escapedPlaceholder):]
+			continue
+		}
+
+		i.WriteString(query[:index])
+		i.WriteString(d.Placeholder(N))
+		N++
+		i.WriteValue(value[valueIndex])
+		query = query[index+len(placeholder):]
+		valueIndex++
+	}
+	i.WriteString(query)
+	return nil
+}
