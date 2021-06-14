@@ -49,16 +49,23 @@ func (b *UpdateStmt) Build(d Dialect, buf Buffer) error {
 	buf.WriteString(d.QuoteIdent(b.Table))
 	buf.WriteString(" SET ")
 
+	// need sorting for values constant testing
+	keys := make([]string, 0, len(b.Value))
+	for k := range b.Value {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
 	i := 0
-	for col, v := range b.Value {
+	for _, k := range keys {
 		if i > 0 {
 			buf.WriteString(", ")
 		}
-		buf.WriteString(d.QuoteIdent(col))
+		buf.WriteString(d.QuoteIdent(k))
 		buf.WriteString(" = ")
 		buf.WriteString(placeholder)
 
-		buf.WriteValue(v)
+		buf.WriteValue(b.Value[k])
 
 		i++
 	}
@@ -136,15 +143,8 @@ func (b *UpdateStmt) Set(column string, value interface{}) *UpdateStmt {
 
 // SetMap specifies a map of (column, value) to update in bulk.
 func (b *UpdateStmt) SetMap(m map[string]interface{}) *UpdateStmt {
-	// need sorting for values constant testing
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	for _, k := range keys {
-		b.Set(k, m[k])
+	for col, v := range m {
+		b.Set(col, v)
 	}
 	return b
 }
