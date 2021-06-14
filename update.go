@@ -1,6 +1,9 @@
 package tyr
 
-import "strconv"
+import (
+	"sort"
+	"strconv"
+)
 
 // UpdateStmt builds `UPDATE ...`.
 type UpdateStmt struct {
@@ -133,8 +136,15 @@ func (b *UpdateStmt) Set(column string, value interface{}) *UpdateStmt {
 
 // SetMap specifies a map of (column, value) to update in bulk.
 func (b *UpdateStmt) SetMap(m map[string]interface{}) *UpdateStmt {
-	for col, val := range m {
-		b.Set(col, val)
+	// need sorting for values constant testing
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		b.Set(k, m[k])
 	}
 	return b
 }
