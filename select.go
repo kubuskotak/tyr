@@ -292,6 +292,14 @@ func (b *SelectStmt) Suffix(suffix string, value ...interface{}) *SelectStmt {
 	return b
 }
 
+// Seek fetches a page in key set way for a large set of data.
+func (b *SelectStmt) Seek(column string, cursor uint64, limit uint64) *SelectStmt {
+	nextCursor := cursor + limit
+	b.Limit(limit)
+	b.WhereCond = append(b.WhereCond, And(Gt(column, cursor), Lte(column, nextCursor)))
+	return b
+}
+
 // Paginate fetches a page in a naive way for a small set of data.
 func (b *SelectStmt) Paginate(page, perPage uint64) *SelectStmt {
 	b.Limit(perPage)
