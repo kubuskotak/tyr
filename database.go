@@ -15,9 +15,6 @@ type Store interface {
 	WithTransaction(ctx context.Context, fn func(ctx context.Context, tx *sql.Tx) error) error
 	Subscriber(ctx context.Context, t EventType, fn EventFunc)
 	Notify(ctx context.Context, t EventType, event Event)
-}
-
-type Driver interface {
 	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 	Exec(query string, args ...interface{}) (sql.Result, error)
 	QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
