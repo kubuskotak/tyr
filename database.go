@@ -32,18 +32,18 @@ const (
 )
 
 type Sql struct {
-	Db    *sql.DB
+	*sql.DB
 	Event *EventHandler
-	Store
 }
 
 func (s *Sql) WithTransaction(ctx context.Context, fn func(context.Context, *sql.Tx) error) error {
 	span, ctxSpan := opentracing.StartSpanFromContext(ctx, "tyr.WithTransaction")
 	defer span.Finish()
-	tx, err := s.Db.BeginTx(ctxSpan, nil)
+	tx, err := s.DB.BeginTx(ctxSpan, nil)
 	if err != nil {
 		return err
 	}
+
 	if err := fn(ctxSpan, tx); err != nil {
 		if errRoll := tx.Rollback(); errRoll != nil {
 			return fmt.Errorf("tx err: %v, rb err: %v", err, errRoll)
@@ -66,6 +66,10 @@ func (s *Sql) Notify(ctx context.Context, event Event) {
 	s.Event.Dispatcher(ctxSpan)
 }
 
+func (s *Sql) SetEvent(handler *EventHandler) {
+	s.Event = handler
+}
+
 type SqlConnParams struct {
 	Driver, Dsn string
 }
@@ -76,7 +80,7 @@ func New(args SqlConnParams) (*Sql, error) {
 		panic(fmt.Errorf("cannot access your db master connection").Error())
 	}
 
-	return &Sql{Db: db, Event: NewEventHandler()}, nil
+	return &Sql{DB: db}, nil
 }
 
 type Error struct {

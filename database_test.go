@@ -18,7 +18,7 @@ func TestDBConn(t *testing.T) {
 	defer conn.Close()
 
 	sqlOpen = func(args SqlConnParams) (*Sql, error) {
-		return &Sql{Db: conn, Event: NewEventHandler()}, nil
+		return &Sql{DB: conn}, nil
 	}
 
 	mock.ExpectPing()
@@ -30,6 +30,7 @@ func TestDBConn(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, db)
 	assert.NotNil(t, cleanup)
+	db.SetEvent(NewEventHandler())
 
 	db.Subscriber(ctx, UpdatedQuery, func(e Event) {
 		assert.Equal(t, UpdatedQuery, e.Type)
@@ -44,8 +45,8 @@ func TestDBConn(t *testing.T) {
 	})
 
 	payload := map[string]interface{}{
-			"payload": "data",
-		}
+		"payload": "data",
+	}
 
 	db.Notify(ctx, Event{
 		Type: CreatedQuery,
@@ -81,14 +82,14 @@ func DBConn() (*Sql, func(), error) {
 	}
 
 	cleanup := func() {
-		_ = conn.Db.Close()
+		_ = conn.DB.Close()
 	}
 
-	conn.Db.SetConnMaxLifetime(time.Minute * time.Duration(5))
-	conn.Db.SetMaxOpenConns(2)
-	conn.Db.SetMaxIdleConns(2)
+	conn.DB.SetConnMaxLifetime(time.Minute * time.Duration(5))
+	conn.DB.SetMaxOpenConns(2)
+	conn.DB.SetMaxIdleConns(2)
 
-	if err = conn.Db.Ping(); err != nil {
+	if err = conn.DB.Ping(); err != nil {
 		return nil, cleanup, err
 	}
 
