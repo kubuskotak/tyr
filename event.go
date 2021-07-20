@@ -38,6 +38,14 @@ func NewEventHandler() *EventHandler {
 	}
 }
 
+// Notify function to invoke event handle
+func (h *EventHandler) Notify(ctx context.Context, event Event) {
+	span, _ := opentracing.StartSpanFromContext(ctx, "tyr.Event.Notify")
+	defer span.Finish()
+	h.Event = event
+	h.Dispatcher(ctx)
+}
+
 // Handle register the handler function to handle an event type
 func (h *EventHandler) Handle(ctx context.Context, e EventType, f EventFunc) {
 	span, _ := opentracing.StartSpanFromContext(ctx, "tyr.Event.Handle")

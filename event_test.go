@@ -49,8 +49,7 @@ func TestNewEventHandler(t *testing.T) {
 	events := make(chan Event)
 	go sender(events)
 	for e := range events {
-		handlers.Event = e
-		handlers.Dispatcher(ctx)
+		handlers.Notify(ctx, e)
 	}
 
 	cancel()
