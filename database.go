@@ -12,8 +12,7 @@ import (
 )
 
 type Store interface {
-	Driver
-	Notify(ctx context.Context, t EventType, event Event)
+	Notify(ctx context.Context, event Event)
 	Subscriber(ctx context.Context, t EventType, fn EventFunc)
 	WithTransaction(ctx context.Context, fn func(ctx context.Context, tx *sql.Tx) error) error
 }
