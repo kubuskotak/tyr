@@ -39,19 +39,19 @@ func (b *DeleteStmt) Build(d Dialect, buf Buffer) error {
 		return err
 	}
 
-	buf.WriteString("DELETE FROM ")
-	buf.WriteString(d.QuoteIdent(b.Table))
+	_, _ = buf.WriteString("DELETE FROM ")
+	_, _ = buf.WriteString(d.QuoteIdent(b.Table))
 
 	if len(b.WhereCond) > 0 {
-		buf.WriteString(" WHERE ")
+		_, _ = buf.WriteString(" WHERE ")
 		err := And(b.WhereCond...).Build(d, buf)
 		if err != nil {
 			return err
 		}
 	}
 	if b.LimitCount >= 0 {
-		buf.WriteString(" LIMIT ")
-		buf.WriteString(strconv.FormatInt(b.LimitCount, 10))
+		_, _ = buf.WriteString(" LIMIT ")
+		_, _ = buf.WriteString(strconv.FormatInt(b.LimitCount, 10))
 	}
 	return nil
 }

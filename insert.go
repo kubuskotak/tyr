@@ -49,56 +49,56 @@ func (b *InsertStmt) Build(d Dialect, buf Buffer) error {
 	}
 
 	if b.Ignored {
-		buf.WriteString("INSERT IGNORE INTO ")
+		_, _ = buf.WriteString("INSERT IGNORE INTO ")
 	} else {
-		buf.WriteString("INSERT INTO ")
+		_, _ = buf.WriteString("INSERT INTO ")
 	}
 
-	buf.WriteString(d.QuoteIdent(b.Table))
+	_, _ = buf.WriteString(d.QuoteIdent(b.Table))
 
 	var placeholderBuf strings.Builder
 	placeholderBuf.WriteString("(")
-	buf.WriteString(" (")
+	_, _ = buf.WriteString(" (")
 	for i, col := range b.Column {
 		if i > 0 {
-			buf.WriteString(",")
+			_, _ = buf.WriteString(",")
 			placeholderBuf.WriteString(",")
 		}
-		buf.WriteString(d.QuoteIdent(col))
+		_, _ = buf.WriteString(d.QuoteIdent(col))
 		placeholderBuf.WriteString(placeholder)
 	}
-	buf.WriteString(")")
+	_, _ = buf.WriteString(")")
 
 	if d == dialect.MSSQL && len(b.ReturnColumn) > 0 {
-		buf.WriteString(" OUTPUT ")
+		_, _ = buf.WriteString(" OUTPUT ")
 		for i, col := range b.ReturnColumn {
 			if i > 0 {
-				buf.WriteString(",")
+				_, _ = buf.WriteString(",")
 			}
-			buf.WriteString("INSERTED." + d.QuoteIdent(col))
+			_, _ = buf.WriteString("INSERTED." + d.QuoteIdent(col))
 		}
 	}
 
-	buf.WriteString(" VALUES ")
+	_, _ = buf.WriteString(" VALUES ")
 	placeholderBuf.WriteString(")")
 	placeholderStr := placeholderBuf.String()
 
 	for i, tuple := range b.Value {
 		if i > 0 {
-			buf.WriteString(", ")
+			_, _ = buf.WriteString(", ")
 		}
-		buf.WriteString(placeholderStr)
+		_, _ = buf.WriteString(placeholderStr)
 
-		buf.WriteValue(tuple...)
+		_ = buf.WriteValue(tuple...)
 	}
 
 	if d != dialect.MSSQL && len(b.ReturnColumn) > 0 {
-		buf.WriteString(" RETURNING ")
+		_, _ = buf.WriteString(" RETURNING ")
 		for i, col := range b.ReturnColumn {
 			if i > 0 {
-				buf.WriteString(",")
+				_, _ = buf.WriteString(",")
 			}
-			buf.WriteString(d.QuoteIdent(col))
+			_, _ = buf.WriteString(d.QuoteIdent(col))
 		}
 	}
 
@@ -172,6 +172,7 @@ func (b *InsertStmt) Record(structValue interface{}) *InsertStmt {
 				if idField.Kind() == reflect.Int64 {
 					b.RecordID = idField.Addr().Interface().(*int64)
 				}
+			default:
 			}
 		}
 		b.Values(value...)

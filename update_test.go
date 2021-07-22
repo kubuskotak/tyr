@@ -20,14 +20,14 @@ func TestUpdateStmt(t *testing.T) {
 func BenchmarkUpdateValuesSQL(b *testing.B) {
 	buf := NewBuffer()
 	for i := 0; i < b.N; i++ {
-		Update("table").Set("a", 1).Build(dialect.MySQL, buf)
+		_ = Update("table").Set("a", 1).Build(dialect.MySQL, buf)
 	}
 }
 
 func BenchmarkUpdateMapSQL(b *testing.B) {
 	buf := NewBuffer()
 	for i := 0; i < b.N; i++ {
-		Update("table").SetMap(map[string]interface{}{"a": 1, "b": 2}).Build(dialect.MySQL, buf)
+		_ = Update("table").SetMap(map[string]interface{}{"a": 1, "b": 2}).Build(dialect.MySQL, buf)
 	}
 }
 

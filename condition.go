@@ -5,16 +5,16 @@ import "reflect"
 func buildCond(d Dialect, buf Buffer, pred string, cond ...Builder) error {
 	for i, c := range cond {
 		if i > 0 {
-			buf.WriteString(" ")
-			buf.WriteString(pred)
-			buf.WriteString(" ")
+			_, _ = buf.WriteString(" ")
+			_, _ = buf.WriteString(pred)
+			_, _ = buf.WriteString(" ")
 		}
-		buf.WriteString("(")
+		_, _ = buf.WriteString("(")
 		err := c.Build(d, buf)
 		if err != nil {
 			return err
 		}
-		buf.WriteString(")")
+		_, _ = buf.WriteString(")")
 	}
 	return nil
 }
@@ -33,14 +33,14 @@ func Or(cond ...Builder) Builder {
 	})
 }
 
-func buildCmp(d Dialect, buf Buffer, pred string, column string, value interface{}) error {
-	buf.WriteString(d.QuoteIdent(column))
-	buf.WriteString(" ")
-	buf.WriteString(pred)
-	buf.WriteString(" ")
-	buf.WriteString(placeholder)
+func buildCmp(d Dialect, buf Buffer, pred, column string, value interface{}) error {
+	_, _ = buf.WriteString(d.QuoteIdent(column))
+	_, _ = buf.WriteString(" ")
+	_, _ = buf.WriteString(pred)
+	_, _ = buf.WriteString(" ")
+	_, _ = buf.WriteString(placeholder)
 
-	buf.WriteValue(value)
+	_ = buf.WriteValue(value)
 	return nil
 }
 
@@ -49,22 +49,8 @@ func buildCmp(d Dialect, buf Buffer, pred string, column string, value interface
 // When value is a slice, it will be translated to `IN`.
 // Otherwise it will be translated to `=`.
 func Eq(column string, value interface{}) Builder {
-	return BuildFunc(func(d Dialect, buf Buffer) error {
-		if value == nil {
-			buf.WriteString(d.QuoteIdent(column))
-			buf.WriteString(" IS NULL")
-			return nil
-		}
-		v := reflect.ValueOf(value)
-		if v.Kind() == reflect.Slice {
-			if v.Len() == 0 {
-				buf.WriteString(d.EncodeBool(false))
-				return nil
-			}
-			return buildCmp(d, buf, "IN", column, value)
-		}
-		return buildCmp(d, buf, "=", column, value)
-	})
+	pred := []string{" IS NULL", "IN", "="}
+	return equal(pred, column, value)
 }
 
 // Neq is `!=`.
@@ -72,22 +58,27 @@ func Eq(column string, value interface{}) Builder {
 // When value is a slice, it will be translated to `NOT IN`.
 // Otherwise it will be translated to `!=`.
 func Neq(column string, value interface{}) Builder {
-	return BuildFunc(func(d Dialect, buf Buffer) error {
+	pred := []string{" IS NOT NULL", "NOT IN", "!="}
+	return equal(pred, column, value)
+}
+
+func equal(pred []string, column string, value interface{}) BuildFunc {
+	return func(d Dialect, buf Buffer) error {
 		if value == nil {
-			buf.WriteString(d.QuoteIdent(column))
-			buf.WriteString(" IS NOT NULL")
+			_, _ = buf.WriteString(d.QuoteIdent(column))
+			_, _ = buf.WriteString(pred[0])
 			return nil
 		}
 		v := reflect.ValueOf(value)
 		if v.Kind() == reflect.Slice {
 			if v.Len() == 0 {
-				buf.WriteString(d.EncodeBool(true))
+				_, _ = buf.WriteString(d.EncodeBool(true))
 				return nil
 			}
-			return buildCmp(d, buf, "NOT IN", column, value)
+			return buildCmp(d, buf, pred[1], column, value)
 		}
-		return buildCmp(d, buf, "!=", column, value)
-	})
+		return buildCmp(d, buf, pred[2], column, value)
+	}
 }
 
 // Gt is `>`.
@@ -119,16 +110,16 @@ func Lte(column string, value interface{}) Builder {
 }
 
 func buildLike(d Dialect, buf Buffer, column, pattern string, isNot bool, escape []string) error {
-	buf.WriteString(d.QuoteIdent(column))
+	_, _ = buf.WriteString(d.QuoteIdent(column))
 	if isNot {
-		buf.WriteString(" NOT LIKE ")
+		_, _ = buf.WriteString(" NOT LIKE ")
 	} else {
-		buf.WriteString(" LIKE ")
+		_, _ = buf.WriteString(" LIKE ")
 	}
-	buf.WriteString(d.EncodeString(pattern))
+	_, _ = buf.WriteString(d.EncodeString(pattern))
 	if len(escape) > 0 {
-		buf.WriteString(" ESCAPE ")
-		buf.WriteString(d.EncodeString(escape[0]))
+		_, _ = buf.WriteString(" ESCAPE ")
+		_, _ = buf.WriteString(d.EncodeString(escape[0]))
 	}
 	return nil
 }

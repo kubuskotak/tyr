@@ -19,6 +19,6 @@ func TestDeleteStmt(t *testing.T) {
 func BenchmarkDeleteSQL(b *testing.B) {
 	buf := NewBuffer()
 	for i := 0; i < b.N; i++ {
-		DeleteFrom("table").Where(Eq("a", 1)).Build(dialect.MySQL, buf)
+		_ = DeleteFrom("table").Where(Eq("a", 1)).Build(dialect.MySQL, buf)
 	}
 }

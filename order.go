@@ -12,12 +12,12 @@ const (
 func order(column string, dir direction) Builder {
 	return BuildFunc(func(d Dialect, buf Buffer) error {
 		// FIXME: no quote ident
-		buf.WriteString(column)
+		_, _ = buf.WriteString(column)
 		switch dir {
 		case asc:
-			buf.WriteString(" ASC")
+			_, _ = buf.WriteString(" ASC")
 		case desc:
-			buf.WriteString(" DESC")
+			_, _ = buf.WriteString(" DESC")
 		}
 		return nil
 	})

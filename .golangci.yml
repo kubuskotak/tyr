@@ -1,0 +1,64 @@
+linters-settings:
+  govet:
+    check-shadowing: true
+  golint:
+    min-confidence: 0
+  gocyclo:
+    min-complexity: 45
+  maligned:
+    suggest-new: true
+  dupl:
+    threshold: 110
+  funlen:
+    lines: 300
+    statements: 75
+
+  goconst:
+    min-len: 2
+    min-occurrences: 2
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport # https://github.com/go-critic/go-critic/issues/845
+      - ifElseChain
+      - octalLiteral
+      - wrapperFunc
+
+
+linters:
+  enable:
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
+    - dupl
+    - errcheck
+    - exportloopref
+    - funlen
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - gosec
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - nakedret
+    - misspell
+    - prealloc
+    - unconvert
+    - unused
+    - varcheck
+    - whitespace
+
+  enable-all: false
+  disable-all: true
+  fast: false

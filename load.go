@@ -10,7 +10,7 @@ type interfaceLoader struct {
 	typ reflect.Type
 }
 
-func InterfaceLoader(value interface{}, concreteType interface{}) interface{} {
+func InterfaceLoader(value, concreteType interface{}) interface{} {
 	return interfaceLoader{value, reflect.TypeOf(concreteType)}
 }
 
@@ -31,9 +31,9 @@ func InterfaceLoader(value interface{}, concreteType interface{}) interface{} {
 func Load(rows *sql.Rows, value interface{}) (int, error) {
 	defer rows.Close()
 
-	column, err := rows.Columns()
-	if err != nil {
-		return 0, err
+	column, errCol := rows.Columns()
+	if errCol != nil {
+		return 0, errCol
 	}
 	ptr := make([]interface{}, len(column))
 
@@ -75,20 +75,15 @@ func Load(rows *sql.Rows, value interface{}) (int, error) {
 		}
 
 		if isMap {
-			err := s.findPtr(elem, column[1:], ptr[1:])
-			if err != nil {
+			if err := s.findPtr(elem, column[1:], ptr[1:]); err != nil {
 				return 0, err
 			}
 			keyElem = reflectAlloc(v.Type().Key())
-			err = s.findPtr(keyElem, column[:1], ptr[:1])
-			if err != nil {
+			if err := s.findPtr(keyElem, column[:1], ptr[:1]); err != nil {
 				return 0, err
 			}
-		} else {
-			err := s.findPtr(elem, column, ptr)
-			if err != nil {
-				return 0, err
-			}
+		} else if err := s.findPtr(elem, column, ptr); err != nil {
+			return 0, err
 		}
 
 		// Before scanning, set nil pointer to dummy dest.
@@ -98,8 +93,7 @@ func Load(rows *sql.Rows, value interface{}) (int, error) {
 				ptr[i] = dummyDest
 			}
 		}
-		err = rows.Scan(ptr...)
-		if err != nil {
+		if err := rows.Scan(ptr...); err != nil {
 			return 0, err
 		}
 		for i := range ptr {
@@ -108,17 +102,18 @@ func Load(rows *sql.Rows, value interface{}) (int, error) {
 
 		count++
 
-		if isSlice {
+		switch {
+		case isSlice:
 			v.Set(reflect.Append(v, elem))
-		} else if isMapOfSlices {
+		case isMapOfSlices:
 			s := v.MapIndex(keyElem)
 			if !s.IsValid() {
 				s = reflect.Zero(v.Type().Elem())
 			}
 			v.SetMapIndex(keyElem, reflect.Append(s, elem))
-		} else if isMap {
+		case isMap:
 			v.SetMapIndex(keyElem, elem)
-		} else {
+		default:
 			break
 		}
 	}

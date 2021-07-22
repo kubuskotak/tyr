@@ -30,14 +30,14 @@ func TestInsertStmt(t *testing.T) {
 func BenchmarkInsertValuesSQL(b *testing.B) {
 	buf := NewBuffer()
 	for i := 0; i < b.N; i++ {
-		InsertInto("table").Columns("a", "b").Values(1, "one").Build(dialect.MySQL, buf)
+		_ = InsertInto("table").Columns("a", "b").Values(1, "one").Build(dialect.MySQL, buf)
 	}
 }
 
 func BenchmarkInsertRecordSQL(b *testing.B) {
 	buf := NewBuffer()
 	for i := 0; i < b.N; i++ {
-		InsertInto("table").Columns("a", "b").Record(&insertTest{
+		_ = InsertInto("table").Columns("a", "b").Record(&insertTest{
 			A: 2,
 			C: "two",
 		}).Build(dialect.MySQL, buf)

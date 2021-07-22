@@ -9,32 +9,32 @@ const (
 	full
 )
 
-func join(t joinType, table interface{}, on interface{}) Builder {
+func join(t joinType, table, on interface{}) Builder {
 	return BuildFunc(func(d Dialect, buf Buffer) error {
-		buf.WriteString(" ")
+		_, _ = buf.WriteString(" ")
 		switch t {
 		case left:
-			buf.WriteString("LEFT ")
+			_, _ = buf.WriteString("LEFT ")
 		case right:
-			buf.WriteString("RIGHT ")
+			_, _ = buf.WriteString("RIGHT ")
 		case full:
-			buf.WriteString("FULL ")
+			_, _ = buf.WriteString("FULL ")
 		}
-		buf.WriteString("JOIN ")
+		_, _ = buf.WriteString("JOIN ")
 		switch table := table.(type) {
 		case string:
-			buf.WriteString(d.QuoteIdent(table))
+			_, _ = buf.WriteString(d.QuoteIdent(table))
 		default:
-			buf.WriteString(placeholder)
-			buf.WriteValue(table)
+			_, _ = buf.WriteString(placeholder)
+			_ = buf.WriteValue(table)
 		}
-		buf.WriteString(" ON ")
+		_, _ = buf.WriteString(" ON ")
 		switch on := on.(type) {
 		case string:
-			buf.WriteString(on)
+			_, _ = buf.WriteString(on)
 		case Builder:
-			buf.WriteString(placeholder)
-			buf.WriteValue(on)
+			_, _ = buf.WriteString(placeholder)
+			_ = buf.WriteValue(on)
 		}
 		return nil
 	})
