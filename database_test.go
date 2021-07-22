@@ -2,10 +2,11 @@ package tyr
 
 import (
 	"context"
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/stretchr/testify/assert"
 )
 
 var sqlOpen = New
@@ -89,7 +90,7 @@ func DBConn() (*Sql, func(), error) {
 	conn.DB.SetMaxOpenConns(2)
 	conn.DB.SetMaxIdleConns(2)
 
-	if err = conn.DB.Ping(); err != nil {
+	if err := conn.DB.Ping(); err != nil {
 		return nil, cleanup, err
 	}
 

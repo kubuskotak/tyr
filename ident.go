@@ -3,9 +3,9 @@ package tyr
 // I is quoted identifier
 type I string
 
-// ToSQL quotes string with dialect.
+// Build quotes string with dialect.
 func (i I) Build(d Dialect, buf Buffer) error {
-	buf.WriteString(d.QuoteIdent(string(i)))
+	_, _ = buf.WriteString(d.QuoteIdent(string(i)))
 	return nil
 }
 
@@ -16,10 +16,10 @@ func (i I) As(alias string) Builder {
 
 func as(expr interface{}, alias string) Builder {
 	return BuildFunc(func(d Dialect, buf Buffer) error {
-		buf.WriteString(placeholder)
-		buf.WriteValue(expr)
-		buf.WriteString(" AS ")
-		buf.WriteString(d.QuoteIdent(alias))
+		_, _ = buf.WriteString(placeholder)
+		_ = buf.WriteValue(expr)
+		_, _ = buf.WriteString(" AS ")
+		_, _ = buf.WriteString(d.QuoteIdent(alias))
 		return nil
 	})
 }

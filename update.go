@@ -45,9 +45,9 @@ func (b *UpdateStmt) Build(d Dialect, buf Buffer) error {
 		return err
 	}
 
-	buf.WriteString("UPDATE ")
-	buf.WriteString(d.QuoteIdent(b.Table))
-	buf.WriteString(" SET ")
+	_, _ = buf.WriteString("UPDATE ")
+	_, _ = buf.WriteString(d.QuoteIdent(b.Table))
+	_, _ = buf.WriteString(" SET ")
 
 	// need sorting for values constant testing
 	keys := make([]string, 0, len(b.Value))
@@ -59,19 +59,19 @@ func (b *UpdateStmt) Build(d Dialect, buf Buffer) error {
 	i := 0
 	for _, k := range keys {
 		if i > 0 {
-			buf.WriteString(", ")
+			_, _ = buf.WriteString(", ")
 		}
-		buf.WriteString(d.QuoteIdent(k))
-		buf.WriteString(" = ")
-		buf.WriteString(placeholder)
+		_, _ = buf.WriteString(d.QuoteIdent(k))
+		_, _ = buf.WriteString(" = ")
+		_, _ = buf.WriteString(placeholder)
 
-		buf.WriteValue(b.Value[k])
+		_ = buf.WriteValue(b.Value[k])
 
 		i++
 	}
 
 	if len(b.WhereCond) > 0 {
-		buf.WriteString(" WHERE ")
+		_, _ = buf.WriteString(" WHERE ")
 		err := And(b.WhereCond...).Build(d, buf)
 		if err != nil {
 			return err
@@ -79,18 +79,18 @@ func (b *UpdateStmt) Build(d Dialect, buf Buffer) error {
 	}
 
 	if len(b.ReturnColumn) > 0 {
-		buf.WriteString(" RETURNING ")
+		_, _ = buf.WriteString(" RETURNING ")
 		for i, col := range b.ReturnColumn {
 			if i > 0 {
-				buf.WriteString(",")
+				_, _ = buf.WriteString(",")
 			}
-			buf.WriteString(d.QuoteIdent(col))
+			_, _ = buf.WriteString(d.QuoteIdent(col))
 		}
 	}
 
 	if b.LimitCount >= 0 {
-		buf.WriteString(" LIMIT ")
-		buf.WriteString(strconv.FormatInt(b.LimitCount, 10))
+		_, _ = buf.WriteString(" LIMIT ")
+		_, _ = buf.WriteString(strconv.FormatInt(b.LimitCount, 10))
 	}
 
 	return nil

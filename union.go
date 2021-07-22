@@ -33,9 +33,9 @@ func (u *union) ToSQL(d Dialect, buf Buffer) error {
 func (u *union) Build(d Dialect, buf Buffer) error {
 	for i, b := range u.builder {
 		if i > 0 {
-			buf.WriteString(" UNION ")
+			_, _ = buf.WriteString(" UNION ")
 			if u.all {
-				buf.WriteString("ALL ")
+				_, _ = buf.WriteString("ALL ")
 			}
 		}
 		err := b.Build(d, buf)

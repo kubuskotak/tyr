@@ -9,15 +9,15 @@ import (
 var NameMapping = camelCaseToSnakeCase
 
 func isUpper(b byte) bool {
-	return 'A' <= b && b <= 'Z'
+	return b >= 'A' && b <= 'Z'
 }
 
 func isLower(b byte) bool {
-	return 'a' <= b && b <= 'z'
+	return b >= 'a' && b <= 'z'
 }
 
 func isDigit(b byte) bool {
-	return '0' <= b && b <= '9'
+	return b >= '0' && b <= '9'
 }
 
 func toLower(b byte) byte {
@@ -32,11 +32,12 @@ func camelCaseToSnakeCase(name string) string {
 	buf.Grow(len(name) * 2)
 
 	for i := 0; i < len(name); i++ {
-		buf.WriteByte(toLower(name[i]))
-		if i != len(name)-1 && isUpper(name[i+1]) &&
-			(isLower(name[i]) || isDigit(name[i]) ||
-				(i != len(name)-2 && isLower(name[i+2]))) {
-			buf.WriteByte('_')
+		if err := buf.WriteByte(toLower(name[i])); err == nil {
+			if i != len(name)-1 && isUpper(name[i+1]) &&
+				(isLower(name[i]) || isDigit(name[i]) ||
+					(i != len(name)-2 && isLower(name[i+2]))) {
+				_ = buf.WriteByte('_')
+			}
 		}
 	}
 
@@ -140,14 +141,6 @@ func (s *tagStore) findValueByName(value reflect.Value, name []string, ret []int
 	}
 }
 
-func prepareSelect(a []string) []interface{} {
-	b := make([]interface{}, len(a))
-	for i := range a {
-		b[i] = a[i]
-	}
-	return b
-}
-
 func interpolateSql(d Dialect, i Buffer, query string, value []interface{}) error {
 	valueIndex := 0
 	N := 0
@@ -160,18 +153,18 @@ func interpolateSql(d Dialect, i Buffer, query string, value []interface{}) erro
 
 		// escape placeholder by repeating it twice
 		if strings.HasPrefix(query[index:], escapedPlaceholder) {
-			i.WriteString(query[:index+1]) // Write placeholder once, not twice
+			_, _ = i.WriteString(query[:index+1]) // Write placeholder once, not twice
 			query = query[index+len(escapedPlaceholder):]
 			continue
 		}
 
-		i.WriteString(query[:index])
-		i.WriteString(d.Placeholder(N))
+		_, _ = i.WriteString(query[:index])
+		_, _ = i.WriteString(d.Placeholder(N))
 		N++
-		i.WriteValue(value[valueIndex])
+		_ = i.WriteValue(value[valueIndex])
 		query = query[index+len(placeholder):]
 		valueIndex++
 	}
-	i.WriteString(query)
+	_, _ = i.WriteString(query)
 	return nil
 }

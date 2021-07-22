@@ -30,7 +30,6 @@ func TestComments(t *testing.T) {
 			expect:   "/* test nested comment removed */\n",
 		},
 	} {
-
 		for _, query := range testQuery {
 			name := ""
 			switch query.Dialect {

@@ -1,6 +1,6 @@
 package tyr
 
 const (
-	placeholder = "?"
-	sqlTag string = "sql"
+	placeholder        = "?"
+	sqlTag      string = "sql"
 )

@@ -12,13 +12,13 @@ func Expr(query string, value ...interface{}) Builder {
 }
 
 func (raw *raw) ToSQL(_ Dialect, buf Buffer) error {
-	buf.WriteString(raw.Query)
-	buf.WriteValue(raw.Value...)
+	_, _ = buf.WriteString(raw.Query)
+	_ = buf.WriteValue(raw.Value...)
 	return nil
 }
 
 func (raw *raw) Build(_ Dialect, buf Buffer) error {
-	buf.WriteString(raw.Query)
-	buf.WriteValue(raw.Value...)
+	_, _ = buf.WriteString(raw.Query)
+	_ = buf.WriteValue(raw.Value...)
 	return nil
 }

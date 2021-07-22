@@ -3,8 +3,9 @@ package tyr
 import (
 	"context"
 	"fmt"
-	"github.com/opentracing/opentracing-go"
 	"time"
+
+	"github.com/opentracing/opentracing-go"
 )
 
 type EventType string

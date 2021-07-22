@@ -50,35 +50,35 @@ func (b *SelectStmt) Build(d Dialect, buf Buffer) error {
 		return err
 	}
 
-	buf.WriteString("SELECT ")
+	_, _ = buf.WriteString("SELECT ")
 
 	if b.IsDistinct {
-		buf.WriteString("DISTINCT ")
+		_, _ = buf.WriteString("DISTINCT ")
 	}
 
 	for i, col := range b.Column {
 		if i > 0 {
-			buf.WriteString(", ")
+			_, _ = buf.WriteString(", ")
 		}
 		switch col := col.(type) {
 		case string:
 			// FIXME: no quote ident
-			buf.WriteString(col)
+			_, _ = buf.WriteString(col)
 		default:
-			buf.WriteString(placeholder)
-			buf.WriteValue(col)
+			_, _ = buf.WriteString(placeholder)
+			_ = buf.WriteValue(col)
 		}
 	}
 
 	if b.Table != nil {
-		buf.WriteString(" FROM ")
+		_, _ = buf.WriteString(" FROM ")
 		switch table := b.Table.(type) {
 		case string:
 			// FIXME: no quote ident
-			buf.WriteString(table)
+			_, _ = buf.WriteString(table)
 		default:
-			buf.WriteString(placeholder)
-			buf.WriteValue(table)
+			_, _ = buf.WriteString(placeholder)
+			_ = buf.WriteValue(table)
 		}
 		if len(b.JoinTable) > 0 {
 			for _, join := range b.JoinTable {
@@ -91,7 +91,7 @@ func (b *SelectStmt) Build(d Dialect, buf Buffer) error {
 	}
 
 	if len(b.WhereCond) > 0 {
-		buf.WriteString(" WHERE ")
+		_, _ = buf.WriteString(" WHERE ")
 		err := And(b.WhereCond...).Build(d, buf)
 		if err != nil {
 			return err
@@ -99,10 +99,10 @@ func (b *SelectStmt) Build(d Dialect, buf Buffer) error {
 	}
 
 	if len(b.Group) > 0 {
-		buf.WriteString(" GROUP BY ")
+		_, _ = buf.WriteString(" GROUP BY ")
 		for i, group := range b.Group {
 			if i > 0 {
-				buf.WriteString(", ")
+				_, _ = buf.WriteString(", ")
 			}
 			err := group.Build(d, buf)
 			if err != nil {
@@ -112,7 +112,7 @@ func (b *SelectStmt) Build(d Dialect, buf Buffer) error {
 	}
 
 	if len(b.HavingCond) > 0 {
-		buf.WriteString(" HAVING ")
+		_, _ = buf.WriteString(" HAVING ")
 		err := And(b.HavingCond...).Build(d, buf)
 		if err != nil {
 			return err
@@ -120,10 +120,10 @@ func (b *SelectStmt) Build(d Dialect, buf Buffer) error {
 	}
 
 	if len(b.Order) > 0 {
-		buf.WriteString(" ORDER BY ")
+		_, _ = buf.WriteString(" ORDER BY ")
 		for i, order := range b.Order {
 			if i > 0 {
-				buf.WriteString(", ")
+				_, _ = buf.WriteString(", ")
 			}
 			err := order.Build(d, buf)
 			if err != nil {
@@ -136,19 +136,19 @@ func (b *SelectStmt) Build(d Dialect, buf Buffer) error {
 		b.addMSSQLLimits(buf)
 	} else {
 		if b.LimitCount >= 0 {
-			buf.WriteString(" LIMIT ")
-			buf.WriteString(strconv.FormatInt(b.LimitCount, 10))
+			_, _ = buf.WriteString(" LIMIT ")
+			_, _ = buf.WriteString(strconv.FormatInt(b.LimitCount, 10))
 		}
 
 		if b.OffsetCount >= 0 {
-			buf.WriteString(" OFFSET ")
-			buf.WriteString(strconv.FormatInt(b.OffsetCount, 10))
+			_, _ = buf.WriteString(" OFFSET ")
+			_, _ = buf.WriteString(strconv.FormatInt(b.OffsetCount, 10))
 		}
 	}
 
 	if len(b.Suffixes) > 0 {
 		for _, suffix := range b.Suffixes {
-			buf.WriteString(" ")
+			_, _ = buf.WriteString(" ")
 			err := suffix.Build(d, buf)
 			if err != nil {
 				return err
@@ -172,26 +172,26 @@ func (b *SelectStmt) addMSSQLLimits(buf Buffer) {
 
 	if len(b.Order) == 0 {
 		// ORDER is required for OFFSET / FETCH
-		buf.WriteString(" ORDER BY ")
+		_, _ = buf.WriteString(" ORDER BY ")
 		col := b.Column[0]
 		switch col := col.(type) {
 		case string:
 			// FIXME: no quote ident
-			buf.WriteString(col)
+			_, _ = buf.WriteString(col)
 		default:
-			buf.WriteString(placeholder)
-			buf.WriteValue(col)
+			_, _ = buf.WriteString(placeholder)
+			_ = buf.WriteValue(col)
 		}
 	}
 
-	buf.WriteString(" OFFSET ")
-	buf.WriteString(strconv.FormatInt(offsetCount, 10))
-	buf.WriteString(" ROWS ")
+	_, _ = buf.WriteString(" OFFSET ")
+	_, _ = buf.WriteString(strconv.FormatInt(offsetCount, 10))
+	_, _ = buf.WriteString(" ROWS ")
 
 	if limitCount >= 0 {
-		buf.WriteString(" FETCH FIRST ")
-		buf.WriteString(strconv.FormatInt(limitCount, 10))
-		buf.WriteString(" ROWS ONLY ")
+		_, _ = buf.WriteString(" FETCH FIRST ")
+		_, _ = buf.WriteString(strconv.FormatInt(limitCount, 10))
+		_, _ = buf.WriteString(" ROWS ONLY ")
 	}
 }
 
@@ -293,7 +293,7 @@ func (b *SelectStmt) Suffix(suffix string, value ...interface{}) *SelectStmt {
 }
 
 // Seek fetches a page in key set way for a large set of data.
-func (b *SelectStmt) Seek(column string, cursor uint64, limit uint64) *SelectStmt {
+func (b *SelectStmt) Seek(column string, cursor, limit uint64) *SelectStmt {
 	nextCursor := cursor + limit
 	b.Limit(limit)
 	b.WhereCond = append(b.WhereCond, And(Gt(column, cursor), Lte(column, nextCursor)))

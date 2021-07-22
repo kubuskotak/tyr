@@ -143,31 +143,31 @@ func (n *NullBool) UnmarshalJSON(b []byte) error {
 
 // NewNullInt64 creates a NullInt64 with Scan().
 func NewNullInt64(v interface{}) (n NullInt64) {
-	n.Scan(v)
+	_ = n.Scan(v)
 	return
 }
 
 // NewNullFloat64 creates a NullFloat64 with Scan().
 func NewNullFloat64(v interface{}) (n NullFloat64) {
-	n.Scan(v)
+	_ = n.Scan(v)
 	return
 }
 
 // NewNullString creates a NullString with Scan().
 func NewNullString(v interface{}) (n NullString) {
-	n.Scan(v)
+	_ = n.Scan(v)
 	return
 }
 
 // NewNullTime creates a NullTime with Scan().
 func NewNullTime(v interface{}) (n NullTime) {
-	n.Scan(v)
+	_ = n.Scan(v)
 	return
 }
 
 // NewNullBool creates a NullBool with Scan().
 func NewNullBool(v interface{}) (n NullBool) {
-	n.Scan(v)
+	_ = n.Scan(v)
 	return
 }
 
@@ -208,11 +208,11 @@ func (n *NullTime) Scan(value interface{}) error {
 		return nil
 	case []byte:
 		n.Time, err = parseDateTime(string(v), time.UTC)
-		n.Valid = (err == nil)
+		n.Valid = err == nil
 		return err
 	case string:
 		n.Time, err = parseDateTime(v, time.UTC)
-		n.Valid = (err == nil)
+		n.Valid = err == nil
 		return err
 	}
 

@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/opentracing/opentracing-go"
 	"strconv"
+
+	"github.com/opentracing/opentracing-go"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/lib/pq"
