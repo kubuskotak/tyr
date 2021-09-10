@@ -295,6 +295,9 @@ func (b *SelectStmt) Suffix(suffix string, value ...interface{}) *SelectStmt {
 
 // Seek fetches a page in key set way for a large set of data.
 func (b *SelectStmt) Seek(col string, cursor, limit uint64) *SelectStmt {
+	if limit == 0 { // default limit
+		limit = 10
+	}
 	nextCursor := cursor + limit
 	b.Limit(limit)
 	b.WhereCond = append(b.WhereCond, Expr(fmt.Sprintf("%s > ? AND %s <= ?", col, col), cursor, nextCursor))
