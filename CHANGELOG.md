@@ -1,4 +1,18 @@
 
+<a name="v0.7,1"></a>
+## [v0.7,1](https://github.com/kubuskotak/tyr/compare/v0.7.0...v0.7,1)
+
+> 2021-09-10
+
+### Doc
+
+* update changelog version
+
+### Feat
+
+* seek and limit ([#5](https://github.com/kubuskotak/tyr/issues/5))
+
+
 <a name="v0.7.0"></a>
 ## v0.7.0
 
